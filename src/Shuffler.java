@@ -1,13 +1,13 @@
-import java.util.ArrayList;
 import java.util.Map;
 
 public class Shuffler {
 
-    public static void shuffle(ArrayList<Reducer> reducerList, Map<String, Integer> wordCount){
-        int nbReducer = reducerList.size();
+
+    public static void shuffle(Map<String, Integer> wordCount){
+        int nbReducer =  DataStorage.listReducer.size();
         for (Map.Entry<String, Integer> entryWord : wordCount.entrySet()) {
             int reducerIndex = getShuffleIndex(entryWord, nbReducer);
-            affectWordToReducer(entryWord, reducerIndex, reducerList);
+            affectWordToReducer(entryWord, reducerIndex);
         }
     }
 
@@ -16,8 +16,7 @@ public class Shuffler {
         return wordSize % nbReducer;
     }
 
-    public static void affectWordToReducer(Map.Entry<String,Integer> entryWord, int index, ArrayList<Reducer> reducerList){
-        Reducer reducer = reducerList.get(index);
-        reducer.getWordMap().add(entryWord);
+    public static void affectWordToReducer(Map.Entry<String,Integer> entryWord, int index){
+        DataStorage.sufflerRes.get(index).add(entryWord);
     }
 }

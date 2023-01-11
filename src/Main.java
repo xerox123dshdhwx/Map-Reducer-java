@@ -2,68 +2,68 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class Main {
-
-
-    static ArrayList<Map<String, Integer>> res = new ArrayList<>();
+public class Main{
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        //Init list of thread is needed, for using the join() function after all the thread started
+        long chrono = Chrono.Go_Chrono();
+        //Initialisation des listes de threads
         ArrayList<Thread> listThreadMapper = new ArrayList<>();
         ArrayList<Thread> listThreadReducer = new ArrayList<>();
-        //List of reducer created to be sent on the mapper to make the sufflling in the mapper
-        ArrayList<Reducer> listReducer = new ArrayList<>();
-        int reducerNumber = 3;
 
-        ShufflerWithFirstLetter.suffle();
+        //Choix du nombre de reducer
+        int reducerNumber = 13;
+
+        //Split du fichier texte à traiter en n parties, 1 pour chaque reducer
         FileSplitter.splitFile("input.txt", reducerNumber);
 
+        //Création de la liste des reducers et initialisation de la liste des résultats des shufflers
         for (int i = 0; i < reducerNumber; i++) {
-            listReducer.add(new Reducer(i));
+            DataStorage.listReducer.add(new Reducer(i));
         }
+        DataStorage.initSufflerRes(reducerNumber);
 
-
+        //Création des threads mapper
         for (int i = 0; i < reducerNumber; i++) {
-            Thread thread = new Thread(new Mapper(i, listReducer));
+            Thread thread = new Thread(new Mapper(i, DataStorage.listReducer));
             listThreadMapper.add(thread);
             thread.start();
         }
+        System.out.println("[*] ================ Les threads mapper sont lancé ================ [*]");
 
-
-        System.out.println("[*] Les thread mapper sont lancé");
+        //Attente que les threads mapper se terminent
         for (Thread t : listThreadMapper) {
             t.join();
         }
-        System.out.println("[*] Les thread mapper sont FINITO");
+        System.out.println("[*] ================ Les threads mapper sont terminés ================ [*]\n");
 
-        //Print the content of the list of each reducer to see if the affection is well done
-        for (Reducer r : listReducer) {
-            System.out.println(r.getWordMap());
+        //Shuffle du resultat des mappers
+        for (Map<String, Integer> map : DataStorage.mapperRes) {
+            Shuffler.shuffle(map);
         }
 
+        //Affichage du résultat des shufflers
+        for (int i = 0; i < DataStorage.sufflerRes.size(); i++) {
+            System.out.println("Shuffle pour le reducer " + i + " : \n" + DataStorage.sufflerRes.get(i));
+        }
+        System.out.println("\n");
 
+        ////Création des threads reducer
         for (int i = 0; i < reducerNumber; i++) {
-            Thread thread = new Thread(listReducer.get(i));
+            Thread thread = new Thread(DataStorage.listReducer.get(i));
             listThreadReducer.add(thread);
             thread.start();
         }
-        System.out.println("[*] Les thread reducer sont lancé");
+        System.out.println("[*] ================ Les threads reducer sont lancés ================ [*]");
 
-
+        //Attente que les threads reducer se terminent
         for (Thread t : listThreadReducer) {
             t.join();
         }
-        System.out.println("[*] Les thread reducer sont FINITO");
+        System.out.println("[*] ================ Les threads reducer sont terminés ================ [*]\n");
 
-
+        //Affichage de la map finale
+        DataStorage.setFinalOutput();
+        System.out.println("La map finale : \n"+DataStorage.finalOutput+"\n");
+        Chrono.Stop_Chrono(chrono);
     }
-
-    public void awaitThread(ArrayList<Thread> listOfThread) throws InterruptedException {
-        for (Thread t : listOfThread) {
-            t.join();
-        }
-        System.out.println("[*] Les thread sont FINITO");
-
-    }
-
 }
