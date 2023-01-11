@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class Mapper implements Runnable {
-    int i;
+    private int i;
     ArrayList<Reducer> listReducer;
 
     public Mapper(int i, ArrayList<Reducer> listReducer) {
@@ -12,9 +12,8 @@ public class Mapper implements Runnable {
 
     @Override
     public void run() {
-        Map<String,Integer> wordCount =  WordCounter.countAndPrintWords("./output/output"+i+".txt");
-        System.out.println(wordCount);
-        Shuffler.shuffle(listReducer,wordCount);
-
+        Map<String, Integer> wordCount = WordCounter.countAndPrintWords("./output/output" + i + ".txt");
+        DataStorage.mapperRes.add(wordCount);
+        System.out.println("Mapper "+i+" terminé");
     }
 }
