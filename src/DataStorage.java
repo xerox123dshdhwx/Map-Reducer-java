@@ -2,8 +2,6 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class DataStorage {
-
-
     static ArrayList<Map<String, Integer>> mapperRes = new ArrayList<>();
     static ArrayList<ArrayList<Map.Entry<String, Integer>>> sufflerRes = new ArrayList<>();
     static ArrayList<Map<String, Integer>> reducerRes = new ArrayList<>();

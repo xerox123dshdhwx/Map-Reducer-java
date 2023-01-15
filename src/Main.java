@@ -11,7 +11,7 @@ public class Main{
         ArrayList<Thread> listThreadReducer = new ArrayList<>();
 
         //Choix du nombre de reducer
-        int reducerNumber = 13;
+        int reducerNumber = 8;
 
         //Split du fichier texte à traiter en n parties, 1 pour chaque reducer
         FileSplitter.splitFile("input.txt", reducerNumber);
@@ -40,12 +40,6 @@ public class Main{
         for (Map<String, Integer> map : DataStorage.mapperRes) {
             Shuffler.shuffle(map);
         }
-
-        //Affichage du résultat des shufflers
-        for (int i = 0; i < DataStorage.sufflerRes.size(); i++) {
-            System.out.println("Shuffle pour le reducer " + i + " : \n" + DataStorage.sufflerRes.get(i));
-        }
-        System.out.println("\n");
 
         ////Création des threads reducer
         for (int i = 0; i < reducerNumber; i++) {
